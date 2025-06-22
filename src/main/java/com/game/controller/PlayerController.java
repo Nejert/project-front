@@ -1,6 +1,8 @@
 package com.game.controller;
 
 import com.game.entity.Player;
+import com.game.entity.Profession;
+import com.game.entity.Race;
 import com.game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,6 +87,16 @@ public class PlayerController {
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(null);
         }
+    }
+
+    @GetMapping("/race")
+    public Race[] getAllRaces() {
+        return Race.values();
+    }
+
+    @GetMapping("/prof")
+    public Profession[] getAllProfessions() {
+        return Profession.values();
     }
 
     private static PlayerInfo toPlayerInfo(Player player) {

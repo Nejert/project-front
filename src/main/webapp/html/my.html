@@ -1,11 +1,67 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>RPG</title>
     <script src=https://code.jquery.com/jquery-3.6.0.min.js></script>
+    <meta charset="UTF-8">
     <link href="/css/my.css" rel="stylesheet">
 </head>
 <body>
 <h1>RPG admin panel</h1>
+<label for="count-selector">Count per page:</label>
+<select id="count-selector">
+    <option value="3" selected>3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="15">15</option>
+    <option value="20">20</option>
+</select>
+<table id="main-table">
+    <tr id="header">
+        <th>#</th>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Race</th>
+        <th>Profession</th>
+        <th>Level</th>
+        <th>Birthday</th>
+        <th>Banned</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+</table>
+<label for="pages">Pages:</label>
+<div title="Pages" id="pages"></div>
+<hr>
+<form class="create-form" style="display: inline-grid;">
 
+    <label for="name">Name: </label>
+    <input type="text" name="name" id="name" minlength="1" maxlength="12" required/>
+
+    <label for="title">Title: </label>
+    <input type="text" name="title" id="title" required/>
+
+    <label for="race-select">Race: </label>
+    <select id="race-select" name="race"></select>
+
+    <label for="prof-select">Profession: </label>
+    <select id="prof-select" name="profession"></select>
+
+    <label for="level">Level: </label>
+    <input type="number" name="level" id="level" min="0" max="100" required/>
+
+    <label for="birthday">Birthday: </label>
+    <input type="date" name="birthday" id="birthday" required/>
+
+    <label for="ban-select">Banned: </label>
+    <select id="ban-select" name="banned">
+        <option value="false" selected>False</option>
+        <option value="true">True</option>
+    </select>
+
+    <input type="button" value="Create" onclick="createPlayer()"/>
+
+</form>
 </body>
+<script src="/js/script.js"></script>
 </html>
