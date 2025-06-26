@@ -1,22 +1,65 @@
+let races;
+let professions;
+let countAccsURL = '/rest/players/count';
+let currentPage = 1;
+
+function init() {
+    $.get("/rest/players/race")
+        .then((data) => {
+            races = fillSelector(data);
+            $("#race-select").append(races);
+        });
+    $.get("/rest/players/prof")
+        .then((data) => {
+            professions = fillSelector(data);
+            $("#prof-select").append(professions);
+        });
+
+    getTableData(currentPage - 1);
+
+    addPagesButtons(countPages(getTotalAccounts(countAccsURL)));
+    $('#count-selector').change(() => {
+        let pages = countPages(getTotalAccounts(countAccsURL));
+        addPagesButtons(pages);
+        if (currentPage >= pages) {
+            currentPage = pages;
+            $('input#page')[currentPage - 1].style.color = 'red';
+        }
+        getTableData(currentPage - 1);
+    });
+    $('input#page')[currentPage - 1].style.color = 'red';
+
+    $("#pages").on("click", "#page", b => {
+        b.target.style.color = 'red';
+        if (currentPage !== b.target.value)
+            if ($('input#page')[currentPage - 1] !== undefined)
+                $('input#page')[currentPage - 1].removeAttribute("style");
+        currentPage = b.target.value;
+        getTableData(currentPage - 1);
+    });
+}
+
+init();
+
 function fillTable(data) {
     let tableBody = $('#main-table tbody');
     $("#main-table #tdata").remove();
-
-    $.each(data, (index, user) => {
-        tableBody.append(
-            "<tr id=\"tdata\">" +
-            "<td id=\"id\">" + user.id + "</td>" +
-            "<td>" + user.name + "</td>" +
-            "<td>" + user.title + "</td>" +
-            "<td>" + user.race + "</td>" +
-            "<td>" + user.profession + "</td>" +
-            "<td>" + user.level + "</td>" +
-            "<td>" + new Date(user.birthday).toLocaleDateString("en-US") + "</td>" +
-            "<td>" + user.banned + "</td>" +
-            "<td>" + "<img alt=\"Edit\" src=\"/img/edit.png\" onclick=\"editPlayer(this)\" id=" + user.id + " />" + "</td>" +
-            "<td>" + "<img alt=\"Delete\" src=\"/img/delete.png\" onclick=\"deletePlayer(this)\" id=" + user.id + " />" + "</td>" +
-            "</tr>"
-        );
+    $.each(data, (index, player) => {
+        let row = `
+        <tr id='tdata'> 
+            <td id='id'>${player.id}</td> 
+            <td>${player.name}</td> 
+            <td>${player.title}</td> 
+            <td>${player.race}</td> 
+            <td>${player.profession}</td> 
+            <td>${player.level}</td> 
+            <td>${new Date(player.birthday).toLocaleDateString('en-US')}</td> 
+            <td>${player.banned}</td> 
+            <td><img alt='Edit' src='/img/edit.png' onclick='editPlayer(this)' id='${player.id}'/></td> 
+            <td><img alt='Delete' src='/img/delete.png' onclick='deletePlayer(this)' id='${player.id}'/></td> 
+        </tr>
+        `;
+        tableBody.append(row);
     });
 }
 
@@ -65,58 +108,39 @@ async function editPlayer(player) {
 
 
     $('#main-table tbody tr').eq(tabIdx).after(createEditTableRow(playerObject));
+    $(`table #race-select option[value='${playerObject.race}']`).prop("selected", true);
+    $(`table #prof-select option[value='${playerObject.profession}']`).prop("selected", true);
+    $(`table #ban-select option[value='${playerObject.banned}']`).prop("selected", true);
     player.parentElement.parentElement.remove();
 }
 
 function createEditTableRow(player) {
-    let nRow = [];
-    nRow.push("<tr id=\"tdata\">",
-        "<td id=\"id\">", player.id, "</td>",
-        "<td><input type=\"text\" id=\"pname\" name=\"name\" value=\"", player.name, "\"/></td>",
-        "<td><input type=\"text\" id=\"ptitle\" name=\"title\" value=\"", player.title, "\"/></td>",
-        "<td><select id=\"race-select\">"
-    );
-
-    for (const race of races) {
-        if (race !== player.race) {
-            nRow.push("<option value=" + race + " >", race, "</option>");
-        } else {
-            nRow.push("<option value=", race, " selected>", race, "</option>");
-        }
-    }
-    nRow.push("</select></td>");
-
-    nRow.push("<td><select id=\"prof-select\">");
-
-    for (const prof of professions) {
-        if (prof !== player.profession) {
-            nRow.push("<option value=" + prof + " >", prof, "</option>");
-        } else {
-            nRow.push("<option value=", prof, " selected>", prof, "</option>");
-        }
-    }
-    nRow.push("</select></td>");
-
-    nRow.push(
-        "<td>" + player.level + "</td>" +
-        "<td>" + new Date(player.birthday).toLocaleDateString("en-US") + "</td>"
-    );
-
-    nRow.push("<td><select id=\"ban-select\">");
-    if (player.banned) {
-        nRow.push("<option value=\"true\" selected>", "True", "</option>");
-        nRow.push("<option value=\"false\">", "False", "</option>");
-    } else {
-        nRow.push("<option value=\"true\">", "True", "</option>");
-        nRow.push("<option value=\"false\" selected>", "False", "</option>");
-    }
-    nRow.push("</select></td>");
-    nRow.push(
-        "<td>" + "<img alt=\"Save\" src=\"/img/save.png\" onclick=\"updatePlayer(this)\" />" + "</td>" +
-        "<td></td>"
-    );
-    nRow.push("</tr>");
-    return nRow.join("");
+    let editRow = `
+        <tr id='tdata'> 
+            <td id='id'>${player.id}</td> 
+            <td><input type='text' id='pname' name='name' value='${player.name}'/></td> 
+            <td><input type='text' id='ptitle' name='title' value='${player.title}'/></td> 
+            <td>
+                <select id='race-select'>
+                    ${races}
+                </select>
+            </td> 
+            <td>
+                <select id="prof-select">
+                    ${professions}            
+                </select>
+            </td> 
+            <td>${player.level}</td> 
+            <td>${new Date(player.birthday).toLocaleDateString('en-US')}</td> 
+            <td>
+                <select id="ban-select">
+                    ${document.getElementById("ban-select").innerHTML}
+                </select>
+            </td> 
+            <td><img alt='Save' src='/img/save.png' onclick='updatePlayer(this)' /></td> 
+            <td></td>
+        </tr>`;
+    return editRow;
 }
 
 function updatePlayer(player) {
@@ -145,8 +169,13 @@ function deletePlayer(player) {
         url: "/rest/players/" + player.id,
         method: 'DELETE',
         success: () => {
+            let pages = countPages(getTotalAccounts(countAccsURL));
+            addPagesButtons(pages);
+            if (pages < currentPage) {
+                currentPage = pages;
+            }
+            $('input#page')[currentPage - 1].style.color = 'red';
             getTableData(currentPage - 1);
-            addPagesButtons(countPages(getTotalAccounts('/rest/players/count')));
         },
         error: function (xhr, status, error) {
             console.error('Error deleting player:', error);
@@ -166,12 +195,12 @@ function getTableData(pageNumber) {
         });
 }
 
-function fillSelector(selector, data) {
-    let sel = $(selector);
+function fillSelector(data) {
+    let res;
     for (const item of data) {
-        sel.append("<option value=" + item + " >" + item + "</option>");
+        res += `<option value=${item}>${item}</option>\n`;
     }
-    $(selector + " option")[0].selected = "selected";
+    return res;
 }
 
 function createPlayer() {
@@ -179,9 +208,9 @@ function createPlayer() {
     let formDataArray = $(".create-form").serializeArray();
     let data = {};
     for (const e of formDataArray) {
-        if (e.name === "birthday"){
+        if (e.name === "birthday") {
             data[e.name] = new Date(e.value).getTime();
-        }else {
+        } else {
             data[e.name] = e.value;
         }
     }
@@ -193,45 +222,8 @@ function createPlayer() {
         contentType: 'application/json;charset=UTF-8',
         success: () => {
             form[0].reset();
-            getTableData(currentPage-1);
+            getTableData(currentPage - 1);
+            addPagesButtons(countPages(getTotalAccounts(countAccsURL)));
         }
     });
 }
-
-///////////////////////////////////////////////////////
-let races;
-$.get("/rest/players/race")
-    .then((data) => {
-        races = data;
-        fillSelector("#race-select", data);
-    });
-let professions;
-$.get("/rest/players/prof")
-    .then((data) => {
-        professions = data;
-        fillSelector("#prof-select", data);
-    });
-let totalAccounts = getTotalAccounts('/rest/players/count');
-let currentPage = 1;
-
-getTableData(currentPage - 1);
-
-addPagesButtons(countPages(totalAccounts));
-$('#count-selector').change(() => {
-    let pages = countPages(totalAccounts);
-    addPagesButtons(pages);
-    if (currentPage - 1 > pages) {
-        currentPage = pages;
-        $('input#page')[currentPage - 1].style.color = 'red';
-    }
-    getTableData(currentPage - 1);
-});
-$('input#page')[currentPage - 1].style.color = 'red';
-
-$("#pages").on("click", "#page", b => {
-    b.target.style.color = 'red';
-    if (currentPage !== b.target.value)
-        $('input#page')[currentPage - 1].removeAttribute("style");
-    currentPage = b.target.value;
-    getTableData(currentPage - 1);
-});

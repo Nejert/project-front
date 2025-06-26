@@ -4,18 +4,24 @@
     <title>RPG</title>
     <script src=https://code.jquery.com/jquery-3.6.0.min.js></script>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="#">
     <link href="/css/my.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 </head>
 <body>
 <h1>RPG admin panel</h1>
-<label for="count-selector">Count per page:</label>
-<select id="count-selector">
-    <option value="3" selected>3</option>
-    <option value="5">5</option>
-    <option value="10">10</option>
-    <option value="15">15</option>
-    <option value="20">20</option>
-</select>
+<div id="count">
+    <label for="count-selector">Count per page:</label>
+    <select id="count-selector">
+        <option value="3" selected>3</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+    </select>
+</div>
 <table id="main-table">
     <tr id="header">
         <th>#</th>
@@ -30,10 +36,9 @@
         <th>Delete</th>
     </tr>
 </table>
-<label for="pages">Pages:</label>
 <div title="Pages" id="pages"></div>
 <hr>
-<form class="create-form" style="display: inline-grid;">
+<form class="create-form">
 
     <label for="name">Name: </label>
     <input type="text" name="name" id="name" minlength="1" maxlength="12" required/>
@@ -58,10 +63,8 @@
         <option value="false" selected>False</option>
         <option value="true">True</option>
     </select>
-
-    <input type="button" value="Create" onclick="createPlayer()"/>
-
 </form>
+<input type="button" id="sub" value="Create" onclick="createPlayer()"/>
 </body>
 <script src="/js/script.js"></script>
 </html>
