@@ -1,15 +1,15 @@
 let races;
 let professions;
-let countAccsURL = '/rest/players/count';
+let countAccsURL = 'rest/players/count';
 let currentPage = 1;
 
 function init() {
-    $.get("/rest/players/race")
+    $.get("rest/players/race")
         .then((data) => {
             races = fillSelector(data);
             $("#race-select").append(races);
         });
-    $.get("/rest/players/prof")
+    $.get("rest/players/prof")
         .then((data) => {
             professions = fillSelector(data);
             $("#prof-select").append(professions);
@@ -55,8 +55,8 @@ function fillTable(data) {
             <td>${player.level}</td> 
             <td>${new Date(player.birthday).toLocaleDateString('en-US')}</td> 
             <td>${player.banned}</td> 
-            <td><img alt='Edit' src='/img/edit.png' onclick='editPlayer(this)' id='${player.id}'/></td> 
-            <td><img alt='Delete' src='/img/delete.png' onclick='deletePlayer(this)' id='${player.id}'/></td> 
+            <td><img alt='Edit' src='img/edit.png' onclick='editPlayer(this)' id='${player.id}'/></td> 
+            <td><img alt='Delete' src='img/delete.png' onclick='deletePlayer(this)' id='${player.id}'/></td> 
         </tr>
         `;
         tableBody.append(row);
@@ -92,7 +92,7 @@ function addPagesButtons(count) {
 async function editPlayer(player) {
     let playerId = parseInt(player.parentElement.parentElement.cells.id.innerText);
     let tabIdx = player.parentElement.parentElement.rowIndex;
-    let playerObject = await $.get('/rest/players', {pageNumber: currentPage - 1, pageSize: $('#count-selector').val()})
+    let playerObject = await $.get('rest/players', {pageNumber: currentPage - 1, pageSize: $('#count-selector').val()})
         .then(data => {
             return function () {
                 let val;
@@ -137,7 +137,7 @@ function createEditTableRow(player) {
                     ${document.getElementById("ban-select").innerHTML}
                 </select>
             </td> 
-            <td><img alt='Save' src='/img/save.png' onclick='updatePlayer(this)' /></td> 
+            <td><img alt='Save' src='img/save.png' onclick='updatePlayer(this)' /></td> 
             <td></td>
         </tr>`;
     return editRow;
@@ -166,7 +166,7 @@ function updatePlayer(player) {
 
 function deletePlayer(player) {
     $.ajax({
-        url: "/rest/players/" + player.id,
+        url: "rest/players/" + player.id,
         method: 'DELETE',
         success: () => {
             let pages = countPages(getTotalAccounts(countAccsURL));
@@ -189,7 +189,7 @@ function countPages(count) {
 }
 
 function getTableData(pageNumber) {
-    $.get('/rest/players', {pageNumber: pageNumber, pageSize: $('#count-selector').val()})
+    $.get('rest/players', {pageNumber: pageNumber, pageSize: $('#count-selector').val()})
         .then(data => {
             fillTable(data);
         });
