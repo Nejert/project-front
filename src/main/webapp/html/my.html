@@ -5,10 +5,11 @@
     <script src=https://code.jquery.com/jquery-3.6.0.min.js></script>
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="#">
-    <link href="css/my.css" rel="stylesheet">
+    <!--    <link href="css/my.css" rel="stylesheet">-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+          rel="stylesheet">
 </head>
 <body>
 <h1>RPG admin panel</h1>
@@ -66,5 +67,20 @@
 </form>
 <input type="button" id="sub" value="Create" onclick="createPlayer()"/>
 </body>
-<script src="js/script.js"></script>
+<script id="pathfinder">
+    let pathname = window.location.pathname;
+    let idx = pathname.indexOf("/", 1);
+    pathname = pathname.substring(0, idx);
+    pathname = pathname === "/html" ? "" : pathname;
+
+    let htmlLinkElement = document.createElement("link");
+    htmlLinkElement.rel = "stylesheet";
+    htmlLinkElement.href = pathname + "/css/my.css";
+    document.head.appendChild(htmlLinkElement);
+
+    let htmlScriptElement = document.createElement("script");
+    htmlScriptElement.src = pathname + "/js/script.js"
+    document.getElementById("pathfinder").after(htmlScriptElement);
+</script>
+<!--<script src="js/script.js"></script>-->
 </html>
